@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    android:layout_gravity="right"
+    android:background="@drawable/widget_border">
+
+    <TextView
+        android:id="@+id/displayLabel"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content" />
+
+    <TextView
+        android:id="@+id/updatedLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@+id/displayLabel"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content" />
+
+    <ImageButton
+        android:src="@drawable/settings"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@+id/displayLabel"
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:src="@drawable/refresh"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@+id/settings_button"
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

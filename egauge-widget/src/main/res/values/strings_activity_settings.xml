@@ -1,0 +1,59 @@
+<resources>
+    <string name="title_activity_settings">eSolar Monitor Settings</string>
+
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_enable_sync">Enable Synchronization</string>
+    <string name="pref_desc_enable_sync">Enable the widget to synchronize with your eGauge monitoring system</string>
+
+    <string name="pref_title_show_time">Show Last Updated Time</string>
+    <string name="pref_desc_show_time">Displays the time when the widget was last updated</string>
+
+    <string name="pref_title_show_settings">Show Settings Button</string>
+    <string name="pref_desc_show_settings">Display settings button on widget</string>
+
+    <string name="pref_title_show_refresh">Show Refresh Button</string>
+    <string name="pref_desc_show_refresh">Display refresh button on widget</string>
+
+    <string name="pref_title_mon_name">Device Name</string>
+    <string name="pref_default_mon_name">eGauge####</string>
+
+    <string name="pref_title_proxy_server">Proxy Server</string>
+    <string name="pref_default_proxy_server">d.egauge.net</string>
+
+    <string name="pref_title_grid_register">Grid Register Name</string>
+    <string name="pref_default_grid_register">Grid</string>
+
+    <string name="pref_title_solar_register">Solar Register Name</string>
+    <string name="pref_default_solar_register">Solar</string>
+
+    <string name="pref_title_sync_frequency">Sync Frequency</string>
+    <string-array name="pref_sync_frequency_labels">
+        <item>Never</item>
+        <item>One Minute</item>
+        <item>Five Minutes</item>
+        <item>Thirty Minutes</item>
+        <item>One Hour</item>
+        <item>Four Hours</item>
+    </string-array>
+    <string-array name="pref_title_sync_frequency_values">
+        <item>-1</item>
+        <item>60</item>
+        <item>300</item>
+        <item>1800</item>
+        <item>3600</item>
+        <item>14400</item>
+    </string-array>
+
+    <string name="pref_title_display_option">Display Option</string>
+    <string-array name="pref_title_display_labels">
+        <item>Show \'Net\' Production / Usage</item>
+        <item>Show Production Only</item>
+        <item>Show Usage Only</item>
+    </string-array>
+    <string-array name="pref_title_display_option_values">
+        <item>net_usage</item>
+        <item>production</item>
+        <item>usage</item>
+    </string-array>
+</resources>
