@@ -12,10 +12,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.trumpetx.egauge.widget.util.Callback;
 import com.trumpetx.egauge.widget.util.EgaugeApiService;
 import com.trumpetx.egauge.widget.util.EgaugeIntents;
+import com.trumpetx.egauge.widget.util.NetworkConnection;
 import com.trumpetx.egauge.widget.xml.Data;
 import com.trumpetx.egauge.widget.xml.Register;
 
@@ -41,7 +43,7 @@ public class EgaugeWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, final AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final boolean enableSync = preferences.getBoolean("enable_sync_checkbox", false);
+        final boolean enableSync = preferences.getBoolean("enable_sync_checkbox", false) && NetworkConnection.hasNetworkConnection(context);
         final boolean showTime = preferences.getBoolean("show_time_checkbox", true);
         final boolean showSettings = preferences.getBoolean("show_settings_checkbox", true);
         final boolean showRefresh = preferences.getBoolean("show_refresh_checkbox", true);
@@ -68,70 +70,74 @@ public class EgaugeWidgetProvider extends AppWidgetProvider {
         if (enableSync) {
             for (final int appWidgetId : appWidgetIds) {
                 Log.i(LOG_TAG, "Updating eGauge widgets " + appWidgetId);
-                EgaugeApiService.getInstance(context).getData(new Callback() {
-                    @Override
-                    public void callback(Object object) {
-                        if (showTime) {
-                            views.setTextViewText(R.id.updatedLabel, df.format(new Date()));
-                            views.setViewVisibility(R.id.updatedLabel, View.VISIBLE);
-                        } else {
-                            views.setViewVisibility(R.id.updatedLabel, View.GONE);
-                        }
-                        if (object instanceof String) {
-                            views.setTextViewText(R.id.displayLabel, (String) object);
-                        } else if (object instanceof Data) {
-                            Map<String, Register> registerNames = new HashMap<>();
-                            for (Register register : ((Data) object).getRegisters()) {
-                                if (POWER.equals(register.getType()) && !register.getName().endsWith("+")) {
-                                    registerNames.put(register.getName(), register);
-                                }
+                try {
+                    EgaugeApiService.getInstance(context).getData(new Callback() {
+                        @Override
+                        public void callback(Object object) {
+                            if (showTime) {
+                                views.setTextViewText(R.id.updatedLabel, df.format(new Date()));
+                                views.setViewVisibility(R.id.updatedLabel, View.VISIBLE);
+                            } else {
+                                views.setViewVisibility(R.id.updatedLabel, View.GONE);
                             }
-                            for (Register register : ((Data) object).getRegisters()) {
-                                if (POWER.equals(register.getType()) && register.getName().endsWith("+")) {
-                                    String nonPlusName = register.getName().substring(0, register.getName().length() - 1);
-                                    registerNames.put(nonPlusName, register); // Overwrite the non-positive only register (don't want to double count)
-                                }
-                            }
-                            long gridTotal = 0;
-                            for (String registerName : gridRegisters) {
-                                if (registerNames.containsKey(registerName)) {
-                                    gridTotal += registerNames.get(registerName).getRateOfChange();
-                                }
-                            }
-
-                            long generationTotal = 0;
-                            for (String registerName : solarRegisters) {
-                                if (registerNames.containsKey(registerName)) {
-                                    long rateOfChange = registerNames.get(registerName).getRateOfChange();
-                                    // This is probably already the case (the + sign register); however, just in case...
-                                    if (rateOfChange > 0) {
-                                        generationTotal += rateOfChange;
+                            if (object instanceof String) {
+                                views.setTextViewText(R.id.displayLabel, (String) object);
+                            } else if (object instanceof Data) {
+                                Map<String, Register> registerNames = new HashMap<>();
+                                for (Register register : ((Data) object).getRegisters()) {
+                                    if (POWER.equals(register.getType()) && !register.getName().endsWith("+")) {
+                                        registerNames.put(register.getName(), register);
                                     }
                                 }
+                                for (Register register : ((Data) object).getRegisters()) {
+                                    if (POWER.equals(register.getType()) && register.getName().endsWith("+")) {
+                                        String nonPlusName = register.getName().substring(0, register.getName().length() - 1);
+                                        registerNames.put(nonPlusName, register); // Overwrite the non-positive only register (don't want to double count)
+                                    }
+                                }
+                                long gridTotal = 0;
+                                for (String registerName : gridRegisters) {
+                                    if (registerNames.containsKey(registerName)) {
+                                        gridTotal += registerNames.get(registerName).getRateOfChange();
+                                    }
+                                }
+
+                                long generationTotal = 0;
+                                for (String registerName : solarRegisters) {
+                                    if (registerNames.containsKey(registerName)) {
+                                        long rateOfChange = registerNames.get(registerName).getRateOfChange();
+                                        // This is probably already the case (the + sign register); however, just in case...
+                                        if (rateOfChange > 0) {
+                                            generationTotal += rateOfChange;
+                                        }
+                                    }
+                                }
+
+                                long usageTotal = gridTotal + generationTotal;
+
+                                long displayValue;
+                                switch (displayPreference) {
+                                    case "usage":
+                                        displayValue = usageTotal * -1;
+                                        break;
+                                    case "production":
+                                        displayValue = generationTotal;
+                                        break;
+                                    case "net_usage":
+                                    default:
+                                        displayValue = gridTotal * -1;
+                                }
+
+                                views.setTextViewText(R.id.displayLabel, displayValue + " " + Register.REGISTER_TYPE_LABELS.get(POWER));
+                                views.setTextColor(R.id.displayLabel, (displayValue > 0) ? Color.GREEN : Color.RED);
+
                             }
-
-                            long usageTotal = gridTotal + generationTotal;
-
-                            long displayValue;
-                            switch (displayPreference) {
-                                case "usage":
-                                    displayValue = usageTotal * -1;
-                                    break;
-                                case "production":
-                                    displayValue = generationTotal;
-                                    break;
-                                case "net_usage":
-                                default:
-                                    displayValue = gridTotal * -1;
-                            }
-
-                            views.setTextViewText(R.id.displayLabel, displayValue + " " + Register.REGISTER_TYPE_LABELS.get(POWER));
-                            views.setTextColor(R.id.displayLabel, (displayValue > 0) ? Color.GREEN : Color.RED);
-
+                            appWidgetManager.updateAppWidget(appWidgetId, views);
                         }
-                        appWidgetManager.updateAppWidget(appWidgetId, views);
-                    }
-                });
+                    });
+                } catch (NotConfiguredException nce) {
+                    Toast.makeText(context, nce.getMessage(), Toast.LENGTH_SHORT);
+                }
             }
         } else {
             Log.i(LOG_TAG, "eGauge sync not enabled.");
@@ -153,7 +159,7 @@ public class EgaugeWidgetProvider extends AppWidgetProvider {
 
     private void enableWidget(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean enableSync = preferences.getBoolean("enable_sync_checkbox", false);
+        boolean enableSync = preferences.getBoolean("enable_sync_checkbox", false) && NetworkConnection.hasNetworkConnection(context);
         int refreshIntervalSeconds = -1;
         try {
             refreshIntervalSeconds = Integer.parseInt(preferences.getString("sync_frequency_list", "300"));

@@ -157,10 +157,10 @@ public class SettingsActivity extends PreferenceActivity implements PreferenceBi
 
     private static void bindPreferences(PreferenceBinder o) {
         o.addPreferencesFromResource(R.xml.pref_general);
-        bindPreferenceSummaryToValue(o.findPreference("egauge_name_text"));
-        bindPreferenceSummaryToValue(o.findPreference("egauge_proxy_server_text"));
-        bindPreferenceSummaryToValue(o.findPreference("egauge_solar_register_text"));
-        bindPreferenceSummaryToValue(o.findPreference("egauge_grid_register_text"));
+        bindPreferenceSummaryToValue(o.findPreference("monitor_name_text"));
+        bindPreferenceSummaryToValue(o.findPreference("proxy_server_text"));
+        bindPreferenceSummaryToValue(o.findPreference("solar_register_text"));
+        bindPreferenceSummaryToValue(o.findPreference("grid_register_text"));
         bindPreferenceSummaryToValue(o.findPreference("sync_frequency_list"));
         bindPreferenceSummaryToValue(o.findPreference("display_option_list"));
     }

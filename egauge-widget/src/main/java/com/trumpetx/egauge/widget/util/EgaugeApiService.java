@@ -28,11 +28,11 @@ public class EgaugeApiService {
 
     public static EgaugeApiService getInstance(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String egaugeName = preferences.getString("egauge_name_text", null);
+        String egaugeName = preferences.getString("monitor_name_text", null);
         if ("eGauge####".equals(egaugeName) || null == egaugeName || "".equals(egaugeName.trim())) {
-            throw new NotConfiguredException("eGauge Name is not configured.");
+            throw new NotConfiguredException("eGauge Monitor Name is not configured.");
         }
-        String proxyServer = preferences.getString("egauge_proxy_server_text", "");
+        String proxyServer = preferences.getString("proxy_server_text", "");
         if (null == proxyServer) {
             throw new NotConfiguredException("eGauge Proxy Server is not configured.");
         }
