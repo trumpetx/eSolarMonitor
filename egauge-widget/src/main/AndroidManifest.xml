@@ -17,6 +17,15 @@
             </intent-filter>
 
         </activity>
+        <activity
+                android:name=".EgaugeWebActivity"
+                android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category."/>
+            </intent-filter>
+
+        </activity>
         <receiver
             android:name=".EgaugeWidgetProvider"
             android:label="@string/app_name">

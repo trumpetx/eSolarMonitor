@@ -29,7 +29,7 @@ android {
             keyAlias "mykey"
             keyPassword ""
         }
-        release {
+        debug {
             storeFile file("debug.keystore")
             storePassword "12341234"
             keyAlias "debug"

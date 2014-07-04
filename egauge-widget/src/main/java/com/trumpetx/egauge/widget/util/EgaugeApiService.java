@@ -1,13 +1,9 @@
 package com.trumpetx.egauge.widget.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
 import com.trumpetx.egauge.widget.NotConfiguredException;
 import com.trumpetx.egauge.widget.xml.Data;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -26,23 +22,11 @@ public class EgaugeApiService {
 
     private static EgaugeApiService singleton;
 
-    public static EgaugeApiService getInstance(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String egaugeName = preferences.getString("monitor_name_text", null);
-        if ("eGauge####".equals(egaugeName) || null == egaugeName || "".equals(egaugeName.trim())) {
-            throw new NotConfiguredException("eGauge Monitor Name is not configured.");
-        }
-        String proxyServer = preferences.getString("proxy_server_text", "");
-        if (null == proxyServer) {
-            throw new NotConfiguredException("eGauge Proxy Server is not configured.");
-        }
-        String url = "http://" + egaugeName + "." + proxyServer;
-
+    public static EgaugeApiService getInstance(Context context) throws NotConfiguredException {
         if (singleton == null) {
             singleton = new EgaugeApiService();
         }
-        singleton.setUrlBase(url);
-
+        singleton.setUrlBase(PreferencesUtil.getEgaugeUrl(context));
 
         return singleton;
     }

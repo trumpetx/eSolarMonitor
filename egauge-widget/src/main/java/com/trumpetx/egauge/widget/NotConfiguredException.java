@@ -1,6 +1,6 @@
 package com.trumpetx.egauge.widget;
 
-public class NotConfiguredException extends RuntimeException {
+public class NotConfiguredException extends Exception {
     public NotConfiguredException() {
         super();
     }
